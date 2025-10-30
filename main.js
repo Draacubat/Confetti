@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import { errorController.js } from "controllers";
 
 dotenv.config();
 const app = express();
@@ -8,6 +9,9 @@ const layouts = require("express-ejs-layouts");
 app.set("view engine", "ejs");
 app.use(layouts);
 app.set("port", process.env.PORT || 3001);
+
+//app.get("")
+
 app.use(
     express.urlencoded({
         extended: false
