@@ -27,12 +27,6 @@ const postedSignUpForm = (req, res) => {
     res.render("thanks");
 };
 
-exports.showCourses = (req, res) => {
-    res.render("courses", {
-        offeredCourses: courses
-    });
-};
-
 export const homeController = {
     showCourses,
     showSignUp,

@@ -1,15 +1,15 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import { errorController.js } from "controllers";
-import { homeController } from "./controllers/homeController";
+import expressEjsLayouts from "express-ejs-layouts";
+import { errorController } from "./controllers/errorController.js";
+import { homeController } from "./controllers/homeController.js";
 
 dotenv.config();
 const app = express();
-const layouts = require("express-ejs-layouts");
 
 app.set("view engine", "ejs");
-app.use(layouts);
+app.use(expressEjsLayouts);
 app.set("port", process.env.PORT || 3001);
 
 app.use(
