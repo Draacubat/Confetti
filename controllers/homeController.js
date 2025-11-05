@@ -1,14 +1,4 @@
-exports.showCourses = (req, res) => {
-    res.render("courses");
-};
-exports.showSignUp = (req, res) => {
-    res.render("contact");
-};
-exports.postedSignUpForm = (req, res) => {
-    res.render("thanks");
-};
-
-var courses = [
+const courses = [
     {
         title: "Event Driven Cakes",
         cost: 50
@@ -23,8 +13,28 @@ var courses = [
     }
 ];
 
+const showCourses = (req, res) => {
+    res.render("courses", {
+        offeredCourses: courses,
+    });
+};
+
+const showSignUp = (req, res) => {
+    res.render("contact");
+};
+
+const postedSignUpForm = (req, res) => {
+    res.render("thanks");
+};
+
 exports.showCourses = (req, res) => {
     res.render("courses", {
         offeredCourses: courses
     });
+};
+
+export const homeController = {
+    showCourses,
+    showSignUp,
+    postedSignUpForm
 };
