@@ -29,7 +29,7 @@ img {
 }
 
 a {
-  color: #333;
+  color: #121111;
   text-decoration: none;
 }
 
@@ -47,7 +47,7 @@ a {
 }
 
 .button {
-  background-color: #ed4a0f;
+  background-color: #e24005;
   padding: 0.3vw 3vw;
   border-radius: 2px;
   cursor: pointer;

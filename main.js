@@ -6,6 +6,10 @@ import { errorController } from "./controllers/errorController.js";
 import { homeController } from "./controllers/homeController.js";
 
 dotenv.config();
+
+const mongoUri = process.env.MONGODB_URI
+mongoose.connect(mongoUri);
+
 const app = express();
 
 app.set("view engine", "ejs");
