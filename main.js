@@ -37,8 +37,8 @@ app.set("view engine", "ejs");
 
 //Passport configuration
 /*passport.use(User.createStrategy()); fix this? */
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+/* passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser()); */
 
 router.use(cookieParser(process.env.SESSION_SECRET));
 router.use(
