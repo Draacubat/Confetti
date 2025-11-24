@@ -36,7 +36,7 @@ app.set("port", process.env.PORT || 3001);
 app.set("view engine", "ejs");
 
 //Passport configuration
-passport.use(User.createStrategy());
+/*passport.use(User.createStrategy()); fix this? */
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 

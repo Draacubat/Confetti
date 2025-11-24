@@ -1,101 +1,117 @@
 "use strict";
 
-import express from "express";
-import layouts from "express-ejs-layouts";
-import mongoose from "mongoose";
-import methodOverride from "method-override";
-import passport from "passport";
-import cookieParser from "cookie-parser";
-import expressSession from "express-session";
-import connectFlash from "connect-flash";
-import dotenv from "dotenv";
-import { User } from "./models/user.js";
-import { homeController } from "./controllers/homeController.js";
-import { errorController } from "./controllers/errorController.js";
-import { subscribersController } from "./controllers/subscribersController.js";
-import { usersController } from "./controllers/usersController.js";
-import { coursesController } from "./controllers/coursesController.js";
+import { User } from "../models/user.js";
 
-dotenv.config();
-const app = express();
-const router = express.Router();
+const getUserParams = (body) => {
+    return {
+        name: {
+            first: body.first,
+            last: body.last,
+        },
+        email: body.email,
+        password: body.password,
+        zipCode: body.zipCode,
+    };
+};
 
-if (!process.env.MONGODB_URI) {
-    console.error("Missing required environment variable MONGODB_URI.");
-    process.exit(1);
-}
+export const usersController = {
+    index: async (req, res, next) => {
+        try {
+            const users = await User.find();
+            res.locals.users = users;
+            next();
+        } catch (error) {
+            console.log(`Error fetching users: ${error.message}`);
+            next(error);
+        }
+    },
 
-mongoose.connect(process.env.MONGODB_URI, {})
-    .then(() => console.log("Connected to MongoDB"))
-    .catch(error => {
-        console.error("Error connecting to MongoDB:", error.message);
-        process.exit(1);
-    });
+    indexView: (req, res) => {
+        res.render("users/index");
+    },
 
-app.set("port", process.env.PORT || 3000);
-app.set("view engine", "ejs");
+    login: (req, res) => {
+        res.render('users/login');
+    },
 
+    new: (req, res) => {
+        res.render("users/new");
+    },
 
-router.use(
-    methodOverride("_method", {
-        methods: ["POST", "GET"]
-    })
-);
+    create: async (req, res, next) => {
+        try {
+            let userParams = getUserParams(req.body);
+            const user = await User.create(userParams);
+            res.locals.redirect = "/users";
+            res.locals.user = user;
+            next();
+        } catch (error) {
+            console.log(`Error saving user: ${error.message}`);
+            next(error);
+        }
+    },
 
-router.use(layouts);
-router.use(express.static("public"));
+    redirectView: (req, res, next) => {
+        let redirectPath = res.locals.redirect;
+        if (redirectPath !== undefined) res.redirect(redirectPath);
+        else next();
+    },
 
-router.use(
-    express.urlencoded({
-        extended: false
-    })
-);
-router.use(express.json());
+    show: async (req, res, next) => {
+        try {
+            let userId = req.params.id;
+            const user = await User.findById(userId);
+            res.locals.user = user;
+            next();
+        } catch (error) {
+            console.log(`Error fetching user by ID: ${error.message}`);
+            next(error);
+        }
+    },
 
-router.get("/", homeController.index);
+    showView: (req, res) => {
+        res.render("users/show");
+    },
 
-router.get("/users", usersController.index, usersController.indexView);
-router.get("/users/new", usersController.new);
-router.post("/users/create", usersController.create, usersController.redirectView);
-router.get("/users/login", usersController.login);
-router.get("/users/:id/edit", usersController.edit);
-router.put("/users/:id/update", usersController.update, usersController.redirectView);
-router.get("/users/:id", usersController.show, usersController.showView);
-router.delete("/users/:id/delete", usersController.delete, usersController.redirectView);
+    edit: async (req, res, next) => {
+        try {
+            let userId = req.params.id;
+            const user = await User.findById(userId);
+            res.render("users/edit", {
+                user: user,
+            });
+        } catch (error) {
+            console.log(`Error fetching user by ID: ${error.message}`);
+            next(error);
+        }
+    },
 
-router.get("/subscribers", subscribersController.index, subscribersController.indexView);
-router.get("/subscribers/new", subscribersController.new);
-router.post(
-    "/subscribers/create",
-    subscribersController.create,
-    subscribersController.redirectView
-);
-router.get("/subscribers/:id/edit", subscribersController.edit);
-router.put(
-    "/subscribers/:id/update",
-    subscribersController.update,
-    subscribersController.redirectView
-);
-router.get("/subscribers/:id", subscribersController.show, subscribersController.showView);
-router.delete(
-    "/subscribers/:id/delete",
-    subscribersController.delete,
-    subscribersController.redirectView
-);
+    update: async (req, res, next) => {
+        try {
+            let userId = req.params.id,
+                userParams = getUserParams(req.body);
 
-router.get("/courses", coursesController.index, coursesController.indexView);
-router.get("/courses/new", coursesController.new);
-router.post("/courses/create", coursesController.create, coursesController.redirectView);
-router.get("/courses/:id/edit", coursesController.edit);
-router.put("/courses/:id/update", coursesController.update, coursesController.redirectView);
-router.get("/courses/:id", coursesController.show, coursesController.showView);
-router.delete("/courses/:id/delete", coursesController.delete, coursesController.redirectView);
+            const user = await User.findByIdAndUpdate(userId, {
+                $set: userParams,
+            });
+            res.locals.redirect = `/users/${userId}`;
+            res.locals.user = user;
+            next();
+        } catch (error) {
+            console.log(`Error updating user by ID: ${error.message}`);
+            next(error);
+        }
+    },
 
-router.use(errorController.pageNotFoundError);
-router.use(errorController.internalServerError);
-
-app.use("/", router);
-
-app.listen(app.get("port"), () => {
-    console.log(`Server running at http://localhost:${app.get("port")}`);
-});
+    delete: async (req, res, next) => {
+        try {
+            let userId = req.params.id;
+            await User.findByIdAndRemove(userId);
+            res.locals.redirect = "/users";
+            next();
+        } catch (error) {
+            console.log(`Error deleting user by ID: ${error.message}`);
+            next(error);
+        }
+    },
+};

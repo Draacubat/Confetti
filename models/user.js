@@ -2,7 +2,7 @@
 
 import mongoose from "mongoose";
 import passportLocalMongoose from "passport-local-mongoose";
-import { Subscriber } from "./subscriber.js";
+import { Subscriber } from "../models/subscriber.js";
 
 const { Schema } = mongoose;
 
