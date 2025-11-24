@@ -1,0 +1,25 @@
+<h2 class="center">Subcribers Table</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <tr>Name</tr>
+            <tr>Email</tr>
+            <tr>Edit</tr>
+            <tr>Delete</tr>
+        </tr>
+    </thead>
+    <tbody>
+        <% subcribers.forEach(subcriber => { %>
+            <tr>
+                <td>
+                    <a href="<%= `/subcribers/${subcriber._id}/edit`  %>">Edit</a>
+                </td>
+                <td>
+                    <a
+                        href="<%= `/subcribers/${subcriber._id}/delete?_method=DELETE` %>"
+                        onclick="return confirm('Are you sure you want to delete this record')">Delete</a>
+                </td>
+            </tr>
+        <% }); >
+    </tbody>
+</table>
